@@ -18,7 +18,8 @@ let RED;
 let GREY;
 let YELLOW;
 
-let newCar;
+let newHero;
+let newEnemy;
 let newRoad;
 
 function initStage2 () {
@@ -46,21 +47,44 @@ function initStage2 () {
     YELLOW = color(255,255,0);
 
     // factories
-    newCar = (xpos = 0, ypos = 0, angle = 0, col) => ({
-        x: xpos, // x position
-        y: ypos, // y position
-        a: angle, // angle
-        c: col, // color
+    newHero = () => ({
+        x: 0, // x position
+        y: 0, // y position
+        a: 0, // angle
         draw() {
             push();
             
             noStroke();
-            fill(this.c);
+            fill(RED);
             
             translate(this.x, this.y, CAR_SZ / 4);
             rotate(this.a);
             
-            ambientMaterial(RED);
+            box(CAR_SX, CAR_SY, CAR_SZ / 2);
+            
+            push();
+            translate(0,0,CAR_SZ/2);
+            box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
+            pop();
+            
+            pop();
+        }
+    });
+
+    newEnemy = (l, y, s) => ({
+        l: l, // lane
+        y: y, // y position
+        s: s, // speed
+        update() {
+            this.y -= s;
+        },
+        draw() {
+            push();
+            
+            noStroke();
+            fill(GREY);
+            
+            translate(LANE_SX*(this.l - 2), this.y, CAR_SZ / 4);
             
             box(CAR_SX, CAR_SY, CAR_SZ / 2);
             
@@ -125,17 +149,16 @@ function initStage2 () {
 }
 
 function newStage2() {
-    let cars = [];
-    cars.push(newCar(100, 0, 0, GREY));
-
     return ({
-        hero: newCar(0, 0, 0, RED),
+        hero: newHero(),
         vx: 0,
         vy: 10,
-        cars: cars,
+        enemies: [],
         currRoad: newRoad(-400),
         nextRoad: newRoad(-1600),
-        nextCkpt: -1200,
+        roadCkpt: -1200,
+        carCkpt: -1200,
+        carFreq: 1600,
 
         updateHero() {
             // LEFT
@@ -150,7 +173,9 @@ function newStage2() {
             
             // NEITHER L/R
             if (!keyIsDown(LEFT_ARROW) && !keyIsDown(RIGHT_ARROW)) {
-                if (this.vx < 0) this.vx += ACC;
+                if (this.vx < 0.1 && this.vx >= 0) this.vx = 0;
+                else if (this.vx > -0.1 && this.vx <0) this.vx = 0;
+                else if (this.vx < 0) this.vx += ACC;
                 else if (this.vx > 0) this.vx -= ACC;
             }
             
@@ -196,15 +221,32 @@ function newStage2() {
         },
 
         updateRoad() {
-            if (this.hero.y <= this.nextCkpt) {
-                this.nextCkpt -= 1200;
+            if (this.hero.y <= this.roadCkpt) {
+                this.roadCkpt -= 1200;
                 this.currRoad = this.nextRoad;
-                this.nextRoad = newRoad(this.nextCkpt-400);
+                this.nextRoad = newRoad(this.roadCkpt-400);
             }
+        },
+
+        updateCars() {
+            if (this.hero.y <= this.carCkpt) {
+                for (let l = 0; l < 5; l++) {
+                    if (this.enemies.length < 20) {
+                        const ypos = this.carCkpt - 1200 - random(CAR_SY, this.carFreq - CAR_SY);
+                        this.enemies.push(newEnemy(l, ypos, 10-l));
+                    }
+                }
+
+                this.carCkpt -= this.carFreq;
+            }
+
+            this.enemies = this.enemies.filter(e => e.y < this.hero.y + 200);
+            this.enemies.forEach(e => e.update());
         },
 
         update() {
             this.updateRoad();
+            this.updateCars();
             this.updateHero();
             this.updateCamera();
         },
@@ -216,7 +258,7 @@ function newStage2() {
             this.currRoad.draw();
             this.nextRoad.draw();
             this.hero.draw();
-            this.cars.forEach(c => c.draw());
+            this.enemies.forEach(e => e.draw());
         },
     })
 }
