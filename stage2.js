@@ -197,13 +197,15 @@ function newStage2() {
 
             this.hero.x += this.vx;
 
-            if (this.hero.x < -2*LANE_SX) {
-                const max = 10 * (-2.5*LANE_SX - this.hero.x) / (0.5*LANE_SX);
+            // HANDLE LEFT BOUND
+            if (this.hero.x < -1.7*LANE_SX) {
+                const max = 10 * (-2.2*LANE_SX - this.hero.x) / (0.5*LANE_SX);
                 if (max > this.vx) this.vx = max;
             }
 
-            if (this.hero.x > 2*LANE_SX) {
-                const max = 10 * (2.5*LANE_SX - this.hero.x) / (0.5*LANE_SX);
+            // HANDLE RIGHT BOUND
+            if (this.hero.x > 1.7*LANE_SX) {
+                const max = 10 * (2.2*LANE_SX - this.hero.x) / (0.5*LANE_SX);
                 if (max < this.vx) this.vx = max;
             }
 
