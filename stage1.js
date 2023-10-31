@@ -1,40 +1,21 @@
-let CAR_SX; // car width
-let CAR_SY; // car depth
-let CAR_SZ; // car height
+// road sizes
+let LANE_SX_1;
+let ROAD_SX_1;
 
-let DASH_SX; // dash width
-let DASH_SY; // dash depth
-let DASH_SZ; // dash height
-
-let LANE_SX; // lane width
-let ROAD_SX; // road width
-
-let ACC; // accelaration
-
-let RED;
-let GREY;
+let ACC_1; // accelaration
 
 let newHero; // hero factory
 
+/**
+ * Initialize Stage 1 constants and factory functions.
+ */
 function initStage1 () {
-    // sizes
-    CAR_SX = 40;
-    CAR_SY = 80;
-    CAR_SZ = 40;
-    
-    DASH_SX = 5;
-    DASH_SY = 30;
-    DASH_SZ = 2;
-    
-    LANE_SX = CAR_SX * 2;
-    ROAD_SX = LANE_SX * 5;
+    // road sizes    
+    LANE_SX_1 = CAR_SX * 2;
+    ROAD_SX_1 = LANE_SX_1 * 5;
     
     // acceleration
-    ACC = 0.2;
-    
-    // colors
-    RED = color(255,0,0);
-    GREY = color(200); 
+    ACC_1 = 0.2;
     
     // factories
     newHero = (xpos = 0, ypos = 0, angle = 0, col = color(0)) => ({
@@ -65,6 +46,10 @@ function initStage1 () {
     });
 }
 
+/**
+ * Create a new instance of Stage 1.
+ * @returns Stage 1 object
+ */
 function newStage1 () {
     return {
         hero: newHero(0,0,0,RED),
@@ -94,26 +79,26 @@ function newStage1 () {
             if (!keyIsDown(LEFT_ARROW) && !keyIsDown(RIGHT_ARROW)) {
                 if (this.vx < 0.1 && this.vx >= 0) this.vx = 0;
                 else if (this.vx > -0.1 && this.vx < 0) this.vx = 0;
-                else if (this.vx < 0) this.vx += ACC;
-                else if (this.vx > 0) this.vx -= ACC;
+                else if (this.vx < 0) this.vx += ACC_1;
+                else if (this.vx > 0) this.vx -= ACC_1;
             }
             
             // UP
             if (keyIsDown(UP_ARROW)) {
-                if (this.vy < 10) this.vy += (1 + ((this.vy + 10) / 20)) * ACC;
+                if (this.vy < 10) this.vy += (1 + ((this.vy + 10) / 20)) * ACC_1;
             }
             
             // DOWN
             if (keyIsDown(DOWN_ARROW)) {
-                if (this.vy > -5) this.vy -= (1 + (-(this.vy - 10) / 20)) * ACC;
+                if (this.vy > -5) this.vy -= (1 + (-(this.vy - 10) / 20)) * ACC_1;
             }
             
             // NEITHER U/D
             if (!keyIsDown(UP_ARROW) && !keyIsDown(DOWN_ARROW)) {
                 if (this.vy < 0.1 && this.vy >= 0) this.vy = 0;
                 else if (this.vy > -0.1 && this.vy < 0) this.vy = 0;
-                else if (this.vy < 0) this.vy += ACC;
-                else if (this.vy > 0) this.vy -= ACC;
+                else if (this.vy < 0) this.vy += ACC_1;
+                else if (this.vy > 0) this.vy -= ACC_1;
             }
             
             this.hero.x += this.vx * cos(this.hero.a) + this.vy * sin(this.hero.a);
@@ -130,7 +115,7 @@ function newStage1 () {
             fill(0);
             noStroke();
             translate(0, -530, 0);
-            plane(ROAD_SX, 1350);
+            plane(ROAD_SX_1, 1350);
             pop();
         },
 
