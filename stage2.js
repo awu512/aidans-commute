@@ -157,8 +157,9 @@ function newStage2() {
         currRoad: newRoad(-400),
         nextRoad: newRoad(-1600),
         roadCkpt: -1200,
-        carCkpt: -1200,
-        carFreq: 1600,
+        enemyCkpt: -1200,
+        enemyFreq: 1600,
+        maxEnemies: 20,
 
         updateHero() {
             // LEFT
@@ -231,15 +232,15 @@ function newStage2() {
         },
 
         updateCars() {
-            if (this.hero.y <= this.carCkpt) {
+            if (this.hero.y <= this.enemyCkpt) {
                 for (let l = 0; l < 5; l++) {
-                    if (this.enemies.length < 20) {
-                        const ypos = this.carCkpt - 1200 - random(CAR_SY, this.carFreq - CAR_SY);
+                    if (this.enemies.length < this.maxEnemies) {
+                        const ypos = this.enemyCkpt - 1200 - random(4*CAR_SY, this.enemyFreq - 4*CAR_SY);
                         this.enemies.push(newEnemy(l, ypos, 10-l));
                     }
                 }
 
-                this.carCkpt -= this.carFreq;
+                this.enemyCkpt -= this.enemyFreq;
             }
 
             this.enemies = this.enemies.filter(e => e.y < this.hero.y + 200);
