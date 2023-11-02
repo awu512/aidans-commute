@@ -129,7 +129,7 @@ function initStage2 () {
  * @returns Stage 2 object
  */
 function newStage2 () {
-    return ({
+    return {
         hero: newHero2(),
         vx: 0,
         vy: 10,
@@ -235,12 +235,12 @@ function newStage2 () {
         },
 
         draw() {
-            directionalLight(color(255), -1, -2, -3);
+            lights();
             
             this.currRoad.draw();
             this.nextRoad.draw();
             this.hero.draw();
             this.enemies.forEach(e => e.draw());
         },
-    })
+    }
 }
