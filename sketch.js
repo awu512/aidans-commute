@@ -6,6 +6,7 @@ let RED;
 let GREY;
 let YELLOW;
 let WHITE;
+let BLACK;
 
 // car sizes
 let CAR_SX;
@@ -27,6 +28,7 @@ function init () {
     GREY = color(200); 
     YELLOW = color(255,255,0);
     WHITE = color(255);
+    BLACK = color(0);
 
     // car sizes
     CAR_SX = 40;
