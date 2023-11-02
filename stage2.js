@@ -77,7 +77,7 @@ function initStage2 () {
         y: ypos,
         drawRoad() {
             push();
-            fill(0);
+            fill(BLACK);
             noStroke();
             translate(0, this.y, 0);
             plane(ROAD_SX_2, ROAD_SY_2);
