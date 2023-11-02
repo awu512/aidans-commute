@@ -1,6 +1,9 @@
 let stage1;
 let stage2;
 
+// space bar
+let SPACE_BAR;
+
 // colors
 let RED;
 let GREY;
@@ -23,6 +26,9 @@ let DASH_GAP;
  * Initialize global constants.
  */
 function init () {
+    // space bar
+    SPACE_BAR = 32;
+
     // colors
     RED = color(255,0,0);
     GREY = color(200); 
