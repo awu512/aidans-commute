@@ -10,6 +10,7 @@ let TURN_R_1;
 
 let newHero1; // hero factory
 let newRoad1; // road factory
+let newConnect1; // road connection factory
 
 /**
  * Initialize Stage 1 constants and factory functions.
@@ -30,14 +31,22 @@ function initStage1 () {
     newHero1 = (xpos = 0, ypos = 0, angle = 0) => ({
         x: xpos, // x position
         y: ypos, // y position
+        z: 0, // z position
         a: angle, // angle
+
+        vx: 0, // x velocity
+        vy: 0, // y velocity
+        vz: 0, // z velocity
+
+        d: 0, // drift direction
+
         draw() {
             push();
             
             noStroke();
             fill(RED);
             
-            translate(this.x, this.y, CAR_SZ / 4);
+            translate(this.x, this.y, this.z + CAR_SZ / 4);
             rotate(this.a);
             
             box(CAR_SX, CAR_SY, CAR_SZ / 2);
@@ -57,7 +66,7 @@ function initStage1 () {
         d: dir,
         draw() {
             push();
-                fill(0);
+                fill(BLACK);
                 noStroke();
                 translate(
                     this.sx + sin(this.d) * ROAD_SY_1/2,
@@ -109,6 +118,21 @@ function initStage1 () {
             pop();
         }
     });
+
+    newConnect1 = (xpos, ypos, bar1, bar2) => ({
+        x: xpos,
+        y: ypos,
+        b1: bar1,
+        b2: bar2,
+        draw() {
+            push();
+                fill(BLACK);
+                noStroke();
+                translate(this.x, this.y, 0);
+                plane(ROAD_SX_1);
+            pop();
+        }
+    });
 }
 
 /**
@@ -118,11 +142,13 @@ function initStage1 () {
 function newStage1 () {
     return {
         hero: newHero1(0,0,0,RED),
-        vx: 0,
-        vy: 0,
+
         prevRoad: newRoad1(0, ROAD_SY_1, PI),
         currRoad: newRoad1(0, 0, PI),
         nextRoad: newRoad1(0, -ROAD_SY_1, PI/2),
+
+        prevConnect: newConnect1(0, 0, PI/2, -PI/2),
+        nextConnect: newConnect1(0, -ROAD_SY_1, PI, -PI/2),
 
         updateCamera() {
             camera(
@@ -135,42 +161,95 @@ function newStage1 () {
         updateHero() {
             // LEFT
             if (keyIsDown(LEFT_ARROW)) {
-                this.hero.a -= TURN_R_1;
+                switch (this.hero.d) {
+                    case -1:
+                        this.hero.a -= 2*TURN_R_1;
+                        break;
+                    case 0:
+                        this.hero.a -= TURN_R_1;
+                        break;
+                    case 1:
+                        this.hero.a += TURN_R_1;
+                }
             }
             
             // RIGHT
             if (keyIsDown(RIGHT_ARROW)) {
-                this.hero.a += TURN_R_1;
+                switch (this.hero.d) {
+                    case -1:
+                        this.hero.a -= TURN_R_1;
+                        break;
+                    case 0:
+                        this.hero.a += TURN_R_1;
+                        break;
+                    case 1:
+                        this.hero.a += 2*TURN_R_1;
+                }
             }
             
             // NEITHER L/R
             if (!keyIsDown(LEFT_ARROW) && !keyIsDown(RIGHT_ARROW)) {
-                if (this.vx < 0.1 && this.vx >= 0) this.vx = 0;
-                else if (this.vx > -0.1 && this.vx < 0) this.vx = 0;
-                else if (this.vx < 0) this.vx += ACC_1;
-                else if (this.vx > 0) this.vx -= ACC_1;
+                switch (this.hero.d) {
+                    case -1:
+                        this.hero.a -= 1.5*TURN_R_1;
+                        break;
+                    case 1:
+                        this.hero.a += 1.5*TURN_R_1;
+                        break;
+                    case 0:
+                        if (this.hero.vx < 0.1 && this.hero.vx >= 0) this.hero.vx = 0;
+                        else if (this.hero.vx > -0.1 && this.hero.vx < 0) this.hero.vx = 0;
+                        else if (this.hero.vx < 0) this.hero.vx += ACC_1;
+                        else if (this.hero.vx > 0) this.hero.vx -= ACC_1;
+                        break;
+                }
+                
             }
             
             // UP
             if (keyIsDown(UP_ARROW)) {
-                if (this.vy < 10) this.vy += (1 + ((this.vy + 10) / 20)) * ACC_1;
+                if (this.hero.vy < 10) this.hero.vy += (1 + ((this.hero.vy + 10) / 20)) * ACC_1;
             }
             
             // DOWN
             if (keyIsDown(DOWN_ARROW)) {
-                if (this.vy > -5) this.vy -= (1 + (-(this.vy - 10) / 20)) * ACC_1;
+                if (this.hero.vy > -5) this.hero.vy -= (1 + (-(this.hero.vy - 10) / 20)) * ACC_1;
             }
             
             // NEITHER U/D
             if (!keyIsDown(UP_ARROW) && !keyIsDown(DOWN_ARROW)) {
-                if (this.vy < 0.1 && this.vy >= 0) this.vy = 0;
-                else if (this.vy > -0.1 && this.vy < 0) this.vy = 0;
-                else if (this.vy < 0) this.vy += ACC_1;
-                else if (this.vy > 0) this.vy -= ACC_1;
+                if (this.hero.vy < 0.1 && this.hero.vy >= 0) this.hero.vy = 0;
+                else if (this.hero.vy > -0.1 && this.hero.vy < 0) this.hero.vy = 0;
+                else if (this.hero.vy < 0) this.hero.vy += ACC_1;
+                else if (this.hero.vy > 0) this.hero.vy -= ACC_1;
             }
-            
-            this.hero.x += this.vx * cos(this.hero.a) + this.vy * sin(this.hero.a);
-            this.hero.y -= this.vy * cos(this.hero.a) + this.vx * sin(this.hero.a);
+
+            // SPACE
+            if (keyIsDown(SPACE_BAR)) {
+                if (this.hero.d == 0 && this.hero.z == 0) {
+                    if (keyIsDown(LEFT_ARROW)) this.hero.d = -1;
+                    else if (keyIsDown(RIGHT_ARROW)) this.hero.d = 1;
+                    this.hero.vz = 1.5;
+                }
+            } else {
+                this.hero.d = 0;
+            }
+
+            // BASE MOVEMENT
+            if (this.hero.d != 0) {
+                this.hero.x += this.hero.vx * cos(this.hero.a) + this.hero.vy * sin(this.hero.a);
+                this.hero.y -= this.hero.vy * cos(this.hero.a) + this.hero.vx * sin(this.hero.a);
+            } else {
+                this.hero.x += this.hero.vx * cos(this.hero.a) + this.hero.vy * sin(this.hero.a);
+                this.hero.y -= this.hero.vy * cos(this.hero.a) + this.hero.vx * sin(this.hero.a);
+            }
+
+            // HOP MECHANICS
+            if (this.hero.z >= 0) this.hero.z += this.hero.vz;
+            else this.hero.z = 0;
+
+            if (this.hero.z > 0) this.hero.vz -= ACC_1;
+            else this.hero.vz = 0;
         },
 
         update() {
@@ -186,6 +265,10 @@ function newStage1 () {
             this.prevRoad.draw();
             this.currRoad.draw();
             this.nextRoad.draw();
+
+            this.prevConnect.draw();
+            this.nextConnect.draw();
+
             this.hero.draw();
         }
     }
