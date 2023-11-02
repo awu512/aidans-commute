@@ -205,7 +205,7 @@ function newStage1 () {
                 }
                 
             }
-            
+
             // UP
             if (keyIsDown(UP_ARROW)) {
                 if (this.hero.vy < 10) this.hero.vy += (1 + ((this.hero.vy + 10) / 20)) * ACC_1;
@@ -227,25 +227,31 @@ function newStage1 () {
             // SPACE
             if (keyIsDown(SPACE_BAR)) {
                 if (this.hero.d == 0 && this.hero.z == 0) {
-                    if (keyIsDown(LEFT_ARROW)) this.hero.d = -1;
-                    else if (keyIsDown(RIGHT_ARROW)) this.hero.d = 1;
                     this.hero.vz = 1.5;
+                    this.hero.z += this.hero.vz;
                 }
             } else {
                 this.hero.d = 0;
             }
 
             // BASE MOVEMENT
-            if (this.hero.d != 0) {
-                this.hero.x += this.hero.vx * cos(this.hero.a) + this.hero.vy * sin(this.hero.a);
-                this.hero.y -= this.hero.vy * cos(this.hero.a) + this.hero.vx * sin(this.hero.a);
-            } else {
-                this.hero.x += this.hero.vx * cos(this.hero.a) + this.hero.vy * sin(this.hero.a);
-                this.hero.y -= this.hero.vy * cos(this.hero.a) + this.hero.vx * sin(this.hero.a);
-            }
+            
+            // adjusted angle based on drift
+            const aa = this.hero.d == 0 ? this.hero.a : this.hero.a - 0.5*this.hero.d;
+
+            this.hero.x += this.hero.vx * cos(aa) + this.hero.vy * sin(aa);
+            this.hero.y -= this.hero.vy * cos(aa) + this.hero.vx * sin(aa);
 
             // HOP MECHANICS
-            if (this.hero.z >= 0) this.hero.z += this.hero.vz;
+            if (this.hero.z > 0) {
+                this.hero.z += this.hero.vz;
+
+                if (this.hero.z <= 0) {
+                    if (keyIsDown(LEFT_ARROW)) this.hero.d = -1;
+                    else if (keyIsDown(RIGHT_ARROW)) this.hero.d = 1;
+                    this.hero.z = 0;
+                }
+            }
             else this.hero.z = 0;
 
             if (this.hero.z > 0) this.hero.vz -= ACC_1;
