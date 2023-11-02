@@ -5,6 +5,7 @@ let stage2;
 let RED;
 let GREY;
 let YELLOW;
+let WHITE;
 
 // car sizes
 let CAR_SX;
@@ -25,6 +26,7 @@ function init () {
     RED = color(255,0,0);
     GREY = color(200); 
     YELLOW = color(255,255,0);
+    WHITE = color(255);
 
     // car sizes
     CAR_SX = 40;
