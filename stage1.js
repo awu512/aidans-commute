@@ -1,10 +1,15 @@
 // road sizes
 let LANE_SX_1;
 let ROAD_SX_1;
+let ROAD_SY_1;
+let DASH_LEN_1;
+let STOP_LINE_1;
 
 let ACC_1; // accelaration
+let TURN_R_1;
 
-let newHero; // hero factory
+let newHero1; // hero factory
+let newRoad1; // road factory
 
 /**
  * Initialize Stage 1 constants and factory functions.
@@ -13,26 +18,27 @@ function initStage1 () {
     // road sizes    
     LANE_SX_1 = CAR_SX * 2;
     ROAD_SX_1 = LANE_SX_1 * 5;
+    ROAD_SY_1 = 1500;
+    DASH_LEN_1 = ROAD_SY_1 - 1.5*ROAD_SX_1;;
+    STOP_LINE_1 = 40;
     
     // acceleration
     ACC_1 = 0.2;
+    TURN_R_1 = 0.01;
     
     // factories
-    newHero = (xpos = 0, ypos = 0, angle = 0, col = color(0)) => ({
+    newHero1 = (xpos = 0, ypos = 0, angle = 0) => ({
         x: xpos, // x position
         y: ypos, // y position
         a: angle, // angle
-        c: col, // color
         draw() {
             push();
             
             noStroke();
-            fill(this.c);
+            fill(RED);
             
             translate(this.x, this.y, CAR_SZ / 4);
             rotate(this.a);
-            
-            ambientMaterial(RED);
             
             box(CAR_SX, CAR_SY, CAR_SZ / 2);
             
@@ -44,6 +50,65 @@ function initStage1 () {
             pop();
         }
     });
+
+    newRoad1 = (xpos, ypos, dir) => ({
+        sx: xpos,
+        sy: ypos,
+        d: dir,
+        draw() {
+            push();
+                fill(0);
+                noStroke();
+                translate(
+                    this.sx + sin(this.d) * ROAD_SY_1/2,
+                    this.sy + cos(this.d) * ROAD_SY_1/2,
+                    0
+                );
+                rotateZ(this.d);
+                plane(ROAD_SX_1, ROAD_SY_1 - ROAD_SX_1);
+
+                push();
+                    fill(YELLOW);
+
+                    push();
+                        translate(5, 0, 0);
+                        box(DASH_SX, DASH_LEN_1, DASH_SZ);
+                    pop();
+
+                    push();
+                        translate(-5, 0, 0);
+                        box(DASH_SX, DASH_LEN_1, DASH_SZ);
+                    pop();
+                pop();
+
+                push();
+                    fill(WHITE);
+
+                    push();
+                        translate(0, DASH_LEN_1/2 + STOP_LINE_1/2, 0);
+                        box(ROAD_SX_1, STOP_LINE_1, DASH_SZ);
+                    pop();
+
+                    push();
+                        translate(0, -DASH_LEN_1/2 - STOP_LINE_1/2, 0);
+                        box(ROAD_SX_1, STOP_LINE_1, DASH_SZ);
+                    pop();
+
+                    for (let y = DASH_GAP/2-DASH_LEN_1/2; y < DASH_LEN_1/2; y += DASH_GAP) {
+                        push();
+                            translate(ROAD_SX_1/4, y, 0);
+                            box(DASH_SX, DASH_SY, DASH_SZ);
+                        pop();
+
+                        push();
+                            translate(-ROAD_SX_1/4, y, 0);
+                            box(DASH_SX, DASH_SY, DASH_SZ);
+                        pop();
+                    }
+                pop();
+            pop();
+        }
+    });
 }
 
 /**
@@ -52,9 +117,12 @@ function initStage1 () {
  */
 function newStage1 () {
     return {
-        hero: newHero(0,0,0,RED),
+        hero: newHero1(0,0,0,RED),
         vx: 0,
         vy: 0,
+        prevRoad: newRoad1(0, ROAD_SY_1, PI),
+        currRoad: newRoad1(0, 0, PI),
+        nextRoad: newRoad1(0, -ROAD_SY_1, PI/2),
 
         updateCamera() {
             camera(
@@ -67,12 +135,12 @@ function newStage1 () {
         updateHero() {
             // LEFT
             if (keyIsDown(LEFT_ARROW)) {
-                this.hero.a -= 0.02;
+                this.hero.a -= TURN_R_1;
             }
             
             // RIGHT
             if (keyIsDown(RIGHT_ARROW)) {
-                this.hero.a += 0.02;
+                this.hero.a += TURN_R_1;
             }
             
             // NEITHER L/R
@@ -110,21 +178,14 @@ function newStage1 () {
             this.updateCamera();
         },
 
-        drawRoad() {
-            push();
-            fill(0);
-            noStroke();
-            translate(0, -530, 0);
-            plane(ROAD_SX_1, 1350);
-            pop();
-        },
-
         draw() {
             background(220);
 
-            directionalLight(color(255), -1, -2, -3);
+            lights();
 
-            this.drawRoad();
+            this.prevRoad.draw();
+            this.currRoad.draw();
+            this.nextRoad.draw();
             this.hero.draw();
         }
     }
