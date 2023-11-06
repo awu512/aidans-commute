@@ -1,7 +1,7 @@
 // road sizes
 let LANE_SX_1;
-let ROAD_SX_1;
-let ROAD_SY_1;
+let RW;
+let RL;
 let DASH_LEN_1;
 let STOP_LINE_1;
 
@@ -18,9 +18,9 @@ let newConnect1; // road connection factory
 function initStage1 () {
     // road sizes    
     LANE_SX_1 = CAR_SX * 2;
-    ROAD_SX_1 = LANE_SX_1 * 5;
-    ROAD_SY_1 = 1500;
-    DASH_LEN_1 = ROAD_SY_1 - 1.5*ROAD_SX_1;;
+    RW = LANE_SX_1 * 5;
+    RL = 1500;
+    DASH_LEN_1 = RL - 1.5*RW;;
     STOP_LINE_1 = 40;
     
     // acceleration
@@ -39,6 +39,7 @@ function initStage1 () {
         vz: 0, // z velocity
 
         d: 0, // drift direction
+        dc: 0, // drift duration
 
         draw() {
             push();
@@ -61,32 +62,42 @@ function initStage1 () {
     });
 
     newRoad1 = (xpos, ypos, dir) => ({
-        sx: xpos,
-        sy: ypos,
+        x: xpos,
+        y: ypos,
         d: dir,
+        
+        contains(x,y) {
+            if (this.d == 0 || this.d == PI)
+                return  x >= this.x - (RW/2) && 
+                        x <= this.x + (RW/2) &&
+                        y >= this.y - (RL/2) &&
+                        y <= this.y + (RL/2);
+            else 
+            return  x >= this.x - (RL/2) && 
+                    x <= this.x + (RL/2) &&
+                    y >= this.y - (RW/2) &&
+                    y <= this.y + (RW/2);
+        },
+
         draw() {
             push();
                 fill(BLACK);
                 noStroke();
-                translate(
-                    this.sx + sin(this.d) * ROAD_SY_1/2,
-                    this.sy + cos(this.d) * ROAD_SY_1/2,
-                    0
-                );
+                translate(this.x, this.y, 0);
                 rotateZ(this.d);
-                plane(ROAD_SX_1, ROAD_SY_1 - ROAD_SX_1);
+                plane(RW, RL);
 
                 push();
                     fill(YELLOW);
 
                     push();
                         translate(5, 0, 0);
-                        box(DASH_SX, DASH_LEN_1, DASH_SZ);
+                        box(DASH_SX, RL - 2*STOP_LINE_1, DASH_SZ);
                     pop();
 
                     push();
                         translate(-5, 0, 0);
-                        box(DASH_SX, DASH_LEN_1, DASH_SZ);
+                        box(DASH_SX, RL - 2*STOP_LINE_1, DASH_SZ);
                     pop();
                 pop();
 
@@ -94,23 +105,23 @@ function initStage1 () {
                     fill(WHITE);
 
                     push();
-                        translate(0, DASH_LEN_1/2 + STOP_LINE_1/2, 0);
-                        box(ROAD_SX_1, STOP_LINE_1, DASH_SZ);
+                        translate(0, RL/2 - STOP_LINE_1/2, 0);
+                        box(RW, STOP_LINE_1, DASH_SZ);
                     pop();
 
                     push();
-                        translate(0, -DASH_LEN_1/2 - STOP_LINE_1/2, 0);
-                        box(ROAD_SX_1, STOP_LINE_1, DASH_SZ);
+                        translate(0, -RL/2 + STOP_LINE_1/2, 0);
+                        box(RW, STOP_LINE_1, DASH_SZ);
                     pop();
 
-                    for (let y = DASH_GAP/2-DASH_LEN_1/2; y < DASH_LEN_1/2; y += DASH_GAP) {
+                    for (let y = DASH_GAP-RL/2; y < RL/2; y += DASH_GAP) {
                         push();
-                            translate(ROAD_SX_1/4, y, 0);
+                            translate(RW/4, y, 0);
                             box(DASH_SX, DASH_SY, DASH_SZ);
                         pop();
 
                         push();
-                            translate(-ROAD_SX_1/4, y, 0);
+                            translate(-RW/4, y, 0);
                             box(DASH_SX, DASH_SY, DASH_SZ);
                         pop();
                     }
@@ -124,12 +135,20 @@ function initStage1 () {
         y: ypos,
         b1: bar1,
         b2: bar2,
+
+        contains(x,y) {
+            return x <= this.x + RW/2 &&
+                x >= this.x - RW/2 &&
+                y <= this.y + RW/2 &&
+                y >= this.y - RW/2
+        },
+
         draw() {
             push();
                 fill(BLACK);
                 noStroke();
                 translate(this.x, this.y, 0);
-                plane(ROAD_SX_1);
+                plane(RW);
             pop();
         }
     });
@@ -143,16 +162,18 @@ function newStage1 () {
     return {
         hero: newHero1(0,0,0,RED),
 
-        prevRoad: newRoad1(0, ROAD_SY_1, PI),
-        currRoad: newRoad1(0, 0, PI),
-        nextRoad: newRoad1(0, -ROAD_SY_1, PI/2),
+        prevRoad: newRoad1(0, RL/2+RW/2, PI),
+        currRoad: newRoad1(0, -RW/2-RL/2, PI),
+        nextRoad: newRoad1(RL/2+RW/2, -RL-RW, PI/2),
 
         prevConnect: newConnect1(0, 0, PI/2, -PI/2),
-        nextConnect: newConnect1(0, -ROAD_SY_1, PI, -PI/2),
+        nextConnect: newConnect1(0, -RL-RW, PI, -PI/2),
 
         updateCamera() {
+            const aa = this.hero.a;
+
             camera(
-                this.hero.x - 195 * sin(this.hero.a), this.hero.y + 195 * cos(this.hero.a), 150,
+                this.hero.x - 195 * sin(aa), this.hero.y + 195 * cos(aa), 150,
                 this.hero.x, this.hero.y, 0,
                 0, 0, -1
             );
@@ -164,12 +185,14 @@ function newStage1 () {
                 switch (this.hero.d) {
                     case -1:
                         this.hero.a -= 2*TURN_R_1;
+                        this.hero.dc -= 3;
                         break;
                     case 0:
                         this.hero.a -= TURN_R_1;
                         break;
                     case 1:
-                        this.hero.a += TURN_R_1;
+                        this.hero.a += TURN_R_1
+                        this.hero.dc += 1;
                 }
             }
             
@@ -178,12 +201,14 @@ function newStage1 () {
                 switch (this.hero.d) {
                     case -1:
                         this.hero.a -= TURN_R_1;
+                        this.hero.dc -= 1;
                         break;
                     case 0:
                         this.hero.a += TURN_R_1;
                         break;
                     case 1:
                         this.hero.a += 2*TURN_R_1;
+                        this.hero.dc += 3
                 }
             }
             
@@ -192,9 +217,11 @@ function newStage1 () {
                 switch (this.hero.d) {
                     case -1:
                         this.hero.a -= 1.5*TURN_R_1;
+                        this.hero.dc -= 2;
                         break;
                     case 1:
                         this.hero.a += 1.5*TURN_R_1;
+                        this.hero.dc += 2;
                         break;
                     case 0:
                         if (this.hero.vx < 0.1 && this.hero.vx >= 0) this.hero.vx = 0;
@@ -232,6 +259,7 @@ function newStage1 () {
                 }
             } else {
                 this.hero.d = 0;
+                this.hero.dc = 0;
             }
 
             // BASE MOVEMENT
@@ -256,6 +284,15 @@ function newStage1 () {
 
             if (this.hero.z > 0) this.hero.vz -= ACC_1;
             else this.hero.vz = 0;
+
+            // HANDLE ROAD BOUNDS
+            if (!this.currRoad.contains(this.hero.x, this.hero.y)) {
+                if (this.nextConnect.contains(this.hero.x, this.hero.y)) {
+                    console.log("next");
+                } else if (this.prevConnect.contains(this.hero.x, this.hero.y)) {
+                    console.log("prev");
+                }
+            }
         },
 
         update() {
