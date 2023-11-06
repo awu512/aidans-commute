@@ -6,7 +6,9 @@ let DASH_LEN_1;
 let STOP_LINE_1;
 
 let ACC_1; // accelaration
-let TURN_R_1;
+let GRAV_1; // gravity
+let MAX_SPEED_1; // max speed
+let TURN_R_1; // turn radius
 
 let newHero1; // hero factory
 let newRoad1; // road factory
@@ -24,8 +26,10 @@ function initStage1 () {
     STOP_LINE_1 = 40;
     
     // acceleration
-    ACC_1 = 0.2;
-    TURN_R_1 = 0.01;
+    ACC_1 = 0.05;
+    GRAV_1 = 0.2;
+    MAX_SPEED_1 = 12;
+    TURN_R_1 = 0.015;
     
     // factories
     newHero1 = (xpos = 0, ypos = 0, angle = 0) => ({
@@ -235,12 +239,12 @@ function newStage1 () {
 
             // UP
             if (keyIsDown(UP_ARROW)) {
-                if (this.hero.vy < 10) this.hero.vy += (1 + ((this.hero.vy + 10) / 20)) * ACC_1;
+                if (this.hero.vy < MAX_SPEED_1) this.hero.vy += (1 + ((this.hero.vy + 10) / 20)) * ACC_1;
             }
             
             // DOWN
             if (keyIsDown(DOWN_ARROW)) {
-                if (this.hero.vy > -5) this.hero.vy -= (1 + (-(this.hero.vy - 10) / 20)) * ACC_1;
+                if (this.hero.vy > -MAX_SPEED_1/3) this.hero.vy -= (1 + (-(this.hero.vy - 10) / 20)) * 2*ACC_1;
             }
             
             // NEITHER U/D
@@ -258,6 +262,10 @@ function newStage1 () {
                     this.hero.z += this.hero.vz;
                 }
             } else {
+                if (this.hero.dc > 60 || this. hero.dc < -60) {
+                    this.hero.vy = 16;
+                }
+
                 this.hero.d = 0;
                 this.hero.dc = 0;
             }
@@ -269,6 +277,11 @@ function newStage1 () {
 
             this.hero.x += this.hero.vx * cos(aa) + this.hero.vy * sin(aa);
             this.hero.y -= this.hero.vy * cos(aa) + this.hero.vx * sin(aa);
+
+            if (this.prevRoad.contains(this.hero.x, this.hero.y)) {
+                this.hero.x -= this.hero.vx * cos(aa) + this.hero.vy * sin(aa);
+                this.hero.y += this.hero.vy * cos(aa) + this.hero.vx * sin(aa);
+            }
 
             // HOP MECHANICS
             if (this.hero.z > 0) {
@@ -282,11 +295,34 @@ function newStage1 () {
             }
             else this.hero.z = 0;
 
-            if (this.hero.z > 0) this.hero.vz -= ACC_1;
+            if (this.hero.z > 0) this.hero.vz -= GRAV_1;
             else this.hero.vz = 0;
+        },
 
+        updateRoads() {
             // HANDLE ROAD BOUNDS
             if (!this.currRoad.contains(this.hero.x, this.hero.y)) {
+                if (this.nextRoad.contains(this.hero.x, this.hero.y)) {
+                    this.prevRoad = this.currRoad;
+                    this.currRoad = this.nextRoad;
+                    this.prevConnect = this.nextConnect;
+
+                    this.nextConnect = newConnect1(
+                        this.currRoad.x + sin(this.currRoad.d) * (RL/2 + RW/2),
+                        this.currRoad.y + cos(this.currRoad.d) * (RL/2 + RW/2),
+                        0, // TODO
+                        0
+                    );
+
+                    const nextDir =  this.currRoad.d + PI/2 * (1 - Math.floor(Math.random() * 3));
+
+                    this.nextRoad = newRoad1(
+                        this.nextConnect.x + sin(nextDir) * (RL/2 + RW/2),
+                        this.nextConnect.y + cos(nextDir) * (RL/2 + RW/2),
+                        nextDir
+                    );
+                }
+
                 if (this.nextConnect.contains(this.hero.x, this.hero.y)) {
                     console.log("next");
                 } else if (this.prevConnect.contains(this.hero.x, this.hero.y)) {
@@ -297,6 +333,7 @@ function newStage1 () {
 
         update() {
             this.updateHero();
+            this.updateRoads();
             this.updateCamera();
         },
 
