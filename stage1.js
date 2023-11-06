@@ -7,6 +7,7 @@ let STOP_LINE_1;
 
 let ACC_1; // accelaration
 let GRAV_1; // gravity
+let TURBO; // boost speed
 let MAX_SPEED_1; // max speed
 let TURN_R_1; // turn radius
 
@@ -28,6 +29,7 @@ function initStage1 () {
     // acceleration
     ACC_1 = 0.05;
     GRAV_1 = 0.2;
+    TURBO = 20;
     MAX_SPEED_1 = 12;
     TURN_R_1 = 0.015;
     
@@ -71,16 +73,17 @@ function initStage1 () {
         d: dir,
         
         contains(x,y) {
-            if (this.d == 0 || this.d == PI)
+            if (Math.abs(sin(this.d)) < 0.001) {
                 return  x >= this.x - (RW/2) && 
                         x <= this.x + (RW/2) &&
                         y >= this.y - (RL/2) &&
                         y <= this.y + (RL/2);
-            else 
-            return  x >= this.x - (RL/2) && 
-                    x <= this.x + (RL/2) &&
-                    y >= this.y - (RW/2) &&
-                    y <= this.y + (RW/2);
+            } else {
+                return  x >= this.x - (RL/2) && 
+                        x <= this.x + (RL/2) &&
+                        y >= this.y - (RW/2) &&
+                        y <= this.y + (RW/2);
+            }
         },
 
         draw() {
@@ -241,10 +244,15 @@ function newStage1 () {
             if (keyIsDown(UP_ARROW)) {
                 if (this.hero.vy < MAX_SPEED_1) this.hero.vy += (1 + ((this.hero.vy + 10) / 20)) * ACC_1;
             }
+
+            if (this.hero.vy > MAX_SPEED_1) this.hero.vy -= 2 * ACC_1;
             
             // DOWN
             if (keyIsDown(DOWN_ARROW)) {
-                if (this.hero.vy > -MAX_SPEED_1/3) this.hero.vy -= (1 + (-(this.hero.vy - 10) / 20)) * 2*ACC_1;
+                if (this.hero.vy > 0)
+                    this.hero.vy -= (1 + (-(this.hero.vy - 10) / 20)) * 4 * ACC_1;
+                else if (this.hero.vy > -MAX_SPEED_1/3) 
+                    this.hero.vy -= (1 + (-(this.hero.vy - 10) / 20)) * ACC_1;
             }
             
             // NEITHER U/D
@@ -262,8 +270,8 @@ function newStage1 () {
                     this.hero.z += this.hero.vz;
                 }
             } else {
-                if (this.hero.dc > 60 || this. hero.dc < -60) {
-                    this.hero.vy = 16;
+                if (this.hero.dc > 60 || this.hero.dc < -60) {
+                    this.hero.vy = TURBO;
                 }
 
                 this.hero.d = 0;
@@ -323,10 +331,11 @@ function newStage1 () {
                     );
                 }
 
-                if (this.nextConnect.contains(this.hero.x, this.hero.y)) {
-                    console.log("next");
-                } else if (this.prevConnect.contains(this.hero.x, this.hero.y)) {
-                    console.log("prev");
+                if (!this.nextConnect.contains(this.hero.x, this.hero.y) &&
+                    !this.prevConnect.contains(this.hero.x, this.hero.y) &&
+                    !this.currRoad.contains(this.hero.x, this.hero.y)
+                ) {
+                    console.log("crash");
                 }
             }
         },
@@ -341,6 +350,8 @@ function newStage1 () {
             background(220);
 
             lights();
+
+            console.log(this.currRoad.d)
 
             this.prevRoad.draw();
             this.currRoad.draw();
