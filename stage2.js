@@ -83,15 +83,29 @@ function initStage2 () {
                         pop();
                     pop();
                     
+                    // UPPER BODY
                     push();
                         translate(0,CAR_SY/8,CAR_SZ/3);
                         box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
 
-                        // WINDOW
+                        // WINDOWS
                         push();
                             fill(GREY_BLUE);
-                            translate(0, CAR_SY/4 + WINDOW_D/2, 1.5*WINDOW_D);
-                            box(CAR_SX - WINDOW_D, WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+
+                            push();
+                                translate(0, CAR_SY/4 + WINDOW_D/2, 1.5*WINDOW_D);
+                                box(CAR_SX - WINDOW_D, WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                            pop();
+
+                            push();
+                                translate(CAR_SX/2, 0, 0);
+                                box(WINDOW_D, CAR_SY/2 - 4 * WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                            pop();
+
+                            push();
+                                translate(-CAR_SX/2, 0, 0);
+                                box(WINDOW_D, CAR_SY/2 - 4 * WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                            pop();
                         pop();
                     pop();
                 pop();
