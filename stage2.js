@@ -5,6 +5,8 @@ let ROAD_SY_2;
 let ACC_2;
 let MAX_SPEED_2;
 
+let GOAL;
+
 let newHero2;
 let newEnemy2;
 let newRoad2;
@@ -18,9 +20,11 @@ function initStage2 () {
     ROAD_SX_2 = LANE_SX_2 * 6;
     ROAD_SY_2 = 1200;
 
-    // ACC_2eleration
+    // acceleration
     ACC_2 = 0.2;
     MAX_SPEED_2 = 10;
+
+    GOAL = 50000;
 
     // factories
     newHero2 = () => ({
@@ -97,12 +101,12 @@ function initStage2 () {
                             pop();
 
                             push();
-                                translate(CAR_SX/2, 0, 0);
+                                translate(CAR_SX/2, 0, 1.5*WINDOW_D);
                                 box(WINDOW_D, CAR_SY/2 - 4 * WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
                             pop();
 
                             push();
-                                translate(-CAR_SX/2, 0, 0);
+                                translate(-CAR_SX/2, 0, 1.5*WINDOW_D);
                                 box(WINDOW_D, CAR_SY/2 - 4 * WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
                             pop();
                         pop();
@@ -147,24 +151,119 @@ function initStage2 () {
         x: LANE_SX_2*(l - 2), // lane
         y: y, // y position
         s: s, // speed
+        c: color(50+Math.random()*150,50+Math.random()*150,50+Math.random()*150), // color
         update() {
             this.y -= s;
         },
         draw() {
             push();
-            
-            noStroke();
-            fill(GREY);
-            
-            translate(this.x, this.y, CAR_SZ / 4);
-            
-            box(CAR_SX, CAR_SY, CAR_SZ / 2);
-            
-            push();
-            translate(0,0,CAR_SZ/2);
-            box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
-            pop();
-            
+                noStroke();
+                
+                translate(this.x, this.y);
+
+                // BODY
+                push();
+                    fill(this.c);
+
+                    translate(0, 0, CAR_SZ / 4 + WHEEL_R);
+                
+                    box(CAR_SX, CAR_SY, CAR_SZ / 3);
+
+                    // LIGHTS
+                    push();
+                        fill(ORANGE);
+                        push();
+                            translate(
+                                CAR_SX/2 - WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                        push();
+                            translate(
+                                -CAR_SX/2 + WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                    pop();
+                    push();
+                        fill(RED);
+                        push();
+                            translate(
+                                CAR_SX/2 - 3.5*WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(4*WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                        push();
+                            translate(
+                                -CAR_SX/2 + 3.5*WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(4*WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                    pop();
+                    
+                    // UPPER BODY
+                    push();
+                        translate(0,CAR_SY/8,CAR_SZ/3);
+                        box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
+
+                        // WINDOWS
+                        push();
+                            fill(GREY_BLUE);
+
+                            push();
+                                translate(0, CAR_SY/4 + WINDOW_D/2, 1.5*WINDOW_D);
+                                box(CAR_SX - WINDOW_D, WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                            pop();
+
+                            push();
+                                translate(CAR_SX/2, 0, 1.5*WINDOW_D);
+                                box(WINDOW_D, CAR_SY/2 - 4 * WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                            pop();
+
+                            push();
+                                translate(-CAR_SX/2, 0, 1.5*WINDOW_D);
+                                box(WINDOW_D, CAR_SY/2 - 4 * WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                            pop();
+                        pop();
+                    pop();
+                pop();
+
+                // TIRES
+                push();
+                    fill(BLACK);
+
+                    push();
+                        translate(CAR_SX/2, CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(-CAR_SX/2, CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(CAR_SX/2, -CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(-CAR_SX/2, -CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+                pop();
             pop();
         },
         contains(hx,hy,ha) {
@@ -309,7 +408,7 @@ function newStage2 () {
 
         updateCamera() {
             camera(
-                this.hero.x, this.hero.y + 195, 150,
+                this.hero.x, this.hero.y + CAM_D, CAM_H,
                 this.hero.x, this.hero.y, 0,
                 0, 0, -1
             );
@@ -351,7 +450,45 @@ function newStage2 () {
             this.updateRoad();
             this.updateHero();
             this.updateCamera();
-            return this.updateEnemies();
+
+            if (this.updateEnemies()) return CRASH;
+            else if (this.hero.y <= GOAL) return FINISH;
+            else return CONT;
+        },
+
+        drawProgress() {
+            const progress = this.hero.y / -GOAL;
+
+            pb.clear();
+
+            pb.noStroke();
+
+            pb.push();
+                pb.fill(GREY);
+                pb.rect(10, 10, 10, 300);
+            pb.pop();
+
+            pb.push();
+                pb.fill(RED);
+                pb.rect(10, 310-300*progress, 10, 300*progress);
+            pb.pop();
+
+            pb.push();
+                pb.fill(RED);
+                pb.translate(22, HUD_W-10);
+                pb.rotate(-PI/2);
+                pb.textSize(20);
+                pb.textFont('Courier New, monospace');
+                pb.text(`${h}:${m < 10 ? "0" : ""}${m}`, 0, 0);
+            pb.pop();
+
+            push();
+                translate(this.hero.x, this.hero.y, 0);
+                rotateZ(PI/2);
+                translate(-300, -HUD_W/2, 0.5*CAM_H);
+                rotateY(PI/2-CAM_A);
+                image(pb, 0, 0);
+            pop();
         },
 
         draw() {
@@ -361,6 +498,8 @@ function newStage2 () {
             this.nextRoad.draw();
             this.hero.draw();
             this.enemies.forEach(e => e.draw());
+
+            this.drawProgress();
         },
     }
 }
