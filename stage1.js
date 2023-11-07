@@ -262,7 +262,7 @@ function newStage1 () {
             const aa = this.hero.a;
 
             camera(
-                this.hero.x - 195 * sin(aa), this.hero.y + 195 * cos(aa), 150,
+                this.hero.x - CAM_D * sin(aa), this.hero.y + CAM_D * cos(aa), CAM_H,
                 this.hero.x, this.hero.y, 0,
                 0, 0, -1
             );
@@ -430,15 +430,19 @@ function newStage1 () {
                     !this.prevConnect.contains(this.hero.x, this.hero.y) &&
                     !this.currRoad.contains(this.hero.x, this.hero.y)
                 ) {
-                    console.log("crash");
+                    return true;
                 }
             }
+
+            return false;
         },
 
         update() {
             this.updateHero();
-            this.updateRoads();
             this.updateCamera();
+            if (this.updateRoads()) return CRASH;
+
+            return CONT;
         },
 
         draw() {
