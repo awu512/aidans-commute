@@ -11,6 +11,8 @@ let TURBO; // boost speed
 let MAX_SPEED_1; // max speed
 let TURN_R_1; // turn radius
 
+let GOAL1;
+
 let newHero1; // hero factory
 let newRoad1; // road factory
 let newConnect1; // road connection factory
@@ -32,6 +34,9 @@ function initStage1 () {
     TURBO = 5;
     MAX_SPEED_1 = 12;
     TURN_R_1 = 0.015;
+
+    // goal
+    GOAL1 = 15;
     
     // factories
     newHero1 = (xpos = 0, ypos = 0, angle = 0) => ({
@@ -258,6 +263,8 @@ function newStage1 () {
         prevConnect: newConnect1(0, 0, PI/2, -PI/2),
         nextConnect: newConnect1(0, -RL-RW, PI, -PI/2),
 
+        progress: 0,
+
         updateCamera() {
             const aa = this.hero.a;
 
@@ -403,9 +410,11 @@ function newStage1 () {
         },
 
         updateRoads() {
-            // HANDLE ROAD BOUNDS
+            // GENERATE NEW ROAD
             if (!this.currRoad.contains(this.hero.x, this.hero.y)) {
                 if (this.nextRoad.contains(this.hero.x, this.hero.y)) {
+                    this.progress++;
+
                     this.prevRoad = this.currRoad;
                     this.currRoad = this.nextRoad;
                     this.prevConnect = this.nextConnect;
@@ -426,6 +435,7 @@ function newStage1 () {
                     );
                 }
 
+                // CRASH IF OUT OF BOUNDS
                 if (!this.nextConnect.contains(this.hero.x, this.hero.y) &&
                     !this.prevConnect.contains(this.hero.x, this.hero.y) &&
                     !this.currRoad.contains(this.hero.x, this.hero.y)
@@ -438,11 +448,48 @@ function newStage1 () {
         },
 
         update() {
+            if (this.progress >= GOAL1) return FINISH;
+
             this.updateHero();
             this.updateCamera();
             if (this.updateRoads()) return CRASH;
 
             return CONT;
+        },
+
+        drawProgress() {
+            const progressPercent = this.progress / GOAL1;
+
+            pb.clear();
+
+            pb.noStroke();
+
+            pb.push();
+                pb.fill(GREY);
+                pb.rect(10, 10, 10, 300);
+            pb.pop();
+
+            pb.push();
+                pb.fill(RED);
+                pb.rect(10, 310-300*progressPercent, 10, 300*progressPercent);
+            pb.pop();
+
+            pb.push();
+                pb.fill(RED);
+                pb.translate(22, HUD_W-10);
+                pb.rotate(-PI/2);
+                pb.textSize(20);
+                pb.textFont('monospace');
+                pb.text(`${h}:${m < 10 ? "0" : ""}${m}`, 0, 0);
+            pb.pop();
+
+            push();
+                translate(this.hero.x, this.hero.y, 0);
+                rotateZ(this.hero.a + PI/2);
+                translate(-300, -HUD_W/2, 0.5*CAM_H);
+                rotateY(PI/2-CAM_A);
+                image(pb, 0, 0);
+            pop();
         },
 
         draw() {
@@ -458,6 +505,8 @@ function newStage1 () {
             this.nextConnect.draw();
 
             this.hero.draw();
+
+            this.drawProgress();
         }
     }
 }
