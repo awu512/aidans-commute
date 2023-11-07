@@ -29,7 +29,7 @@ function initStage1 () {
     // acceleration
     ACC_1 = 0.05;
     GRAV_1 = 0.2;
-    TURBO = 20;
+    TURBO = 4;
     MAX_SPEED_1 = 12;
     TURN_R_1 = 0.015;
     
@@ -351,8 +351,10 @@ function newStage1 () {
                     this.hero.z += this.hero.vz;
                 }
             } else {
-                if (this.hero.dc > 60 || this.hero.dc < -60) {
-                    this.hero.vy = TURBO;
+                if (this.hero.dc > 120 || this.hero.dc < -120) {
+                    this.hero.vy = MAX_SPEED_1 + 2*TURBO;
+                } else if (this.hero.dc > 60 || this.hero.dc < -60) {
+                    this.hero.vy = MAX_SPEED_1 + TURBO;
                 }
 
                 this.hero.d = 0;
@@ -431,8 +433,6 @@ function newStage1 () {
             background(220);
 
             lights();
-
-            console.log(this.currRoad.d)
 
             this.prevRoad.draw();
             this.currRoad.draw();
