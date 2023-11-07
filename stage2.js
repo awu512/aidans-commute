@@ -29,7 +29,6 @@ function initStage2 () {
         a: 0, // angle
         draw() {
             push();
-            
                 noStroke();
                 
                 translate(this.x, this.y);
@@ -145,7 +144,7 @@ function initStage2 () {
     });
 
     newEnemy2 = (l, y, s) => ({
-        l: l, // lane
+        x: LANE_SX_2*(l - 2), // lane
         y: y, // y position
         s: s, // speed
         update() {
@@ -157,7 +156,7 @@ function initStage2 () {
             noStroke();
             fill(GREY);
             
-            translate(LANE_SX_2*(this.l - 2), this.y, CAR_SZ / 4);
+            translate(this.x, this.y, CAR_SZ / 4);
             
             box(CAR_SX, CAR_SY, CAR_SZ / 2);
             
@@ -167,6 +166,22 @@ function initStage2 () {
             pop();
             
             pop();
+        },
+        contains(hx,hy,ha) {
+            for (let xd = -1; xd <= 1; xd+=2) {
+                for (let yd = -1; yd <= 1; yd+=2) {
+                    const cx = hx + xd * (cos(ha) * (CAR_SX/2)) - yd * (sin(ha) * (CAR_SY/2));
+                    const cy = hy + xd * (sin(ha) * (CAR_SX/2)) + yd * (cos(ha) * (CAR_SY/2));
+
+                    if (this.x - CAR_SX/2 <= cx &&
+                        this.x + CAR_SX/2 >= cx &&
+                        this.y - CAR_SY/2 <= cy &&
+                        this.y + CAR_SY/2 >= cy)
+                        return true;
+                }
+            }
+
+            return false;
         }
     });
 
@@ -308,7 +323,8 @@ function newStage2 () {
             }
         },
 
-        updateCars() {
+        updateEnemies() {
+            // spawning
             if (this.hero.y <= this.enemyCkpt) {
                 for (let l = 0; l < 5; l++) {
                     if (this.enemies.length < this.maxEnemies) {
@@ -320,16 +336,22 @@ function newStage2 () {
                 this.enemyCkpt -= this.enemyFreq;
             }
 
+            // remove
             this.enemies = this.enemies.filter(e => 
                 e.y < this.hero.y + 200 && e.y > this.hero.y - 1800);
+
+            // move
             this.enemies.forEach(e => e.update());
+            
+            // collision
+            return this.enemies.some(e => e.contains(this.hero.x, this.hero.y, this.hero.a));
         },
 
         update() {
             this.updateRoad();
-            this.updateCars();
             this.updateHero();
             this.updateCamera();
+            return this.updateEnemies();
         },
 
         draw() {
