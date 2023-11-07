@@ -132,7 +132,7 @@ function draw () {
     background(220);
 
     // update clock
-    if (frameCount % 120 == 0) {
+    if (frameCount % 180 == 0) {
         m++;
         if (m >= 60) {
             h++;
@@ -146,6 +146,9 @@ function draw () {
             break;
         case CRASH:
             stage = newStage0();
+            stageI = 0;
+            h = 7;
+            m = 0;
             break;
         case FINISH:
             switch (stageI) {
@@ -159,7 +162,7 @@ function draw () {
                     stage = newStage1();
                     break;
             }
-
+            stageI++;
     }
 }
 
