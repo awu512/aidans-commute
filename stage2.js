@@ -5,7 +5,7 @@ let ROAD_SY_2;
 let ACC_2;
 let MAX_SPEED_2;
 
-let GOAL;
+let GOAL2;
 
 let newHero2;
 let newEnemy2;
@@ -24,7 +24,7 @@ function initStage2 () {
     ACC_2 = 0.2;
     MAX_SPEED_2 = 10;
 
-    GOAL = 50000;
+    GOAL2 = 40000;
 
     // factories
     newHero2 = () => ({
@@ -451,13 +451,13 @@ function newStage2 () {
             this.updateHero();
             this.updateCamera();
 
-            if (this.updateEnemies()) return CRASH;
-            else if (this.hero.y <= GOAL) return FINISH;
+            if (this.updateEnemies()) return CONT;
+            else if (this.hero.y <= -GOAL2) return FINISH;
             else return CONT;
         },
 
         drawProgress() {
-            const progress = this.hero.y / -GOAL;
+            const progress = this.hero.y / -GOAL2;
 
             pb.clear();
 
