@@ -29,7 +29,7 @@ function initStage1 () {
     // acceleration
     ACC_1 = 0.05;
     GRAV_1 = 0.2;
-    TURBO = 4;
+    TURBO = 5;
     MAX_SPEED_1 = 12;
     TURN_R_1 = 0.015;
     
@@ -46,6 +46,7 @@ function initStage1 () {
 
         d: 0, // drift direction
         dc: 0, // drift duration
+        lc: RED, // light color
 
         draw() {
             push();
@@ -84,7 +85,7 @@ function initStage1 () {
                         pop();
                     pop();
                     push();
-                        fill(RED);
+                        fill(this.lc);
                         push();
                             translate(
                                 CAR_SX/2 - 3.5*WINDOW_D, 
@@ -350,11 +351,22 @@ function newStage1 () {
                     this.hero.vz = 1.5;
                     this.hero.z += this.hero.vz;
                 }
+
+                if (this.hero.dc > 140 || this.hero.dc < -140) {
+                    this.hero.lc = BLUE;
+                } else if (this.hero.dc > 60 || this.hero.dc < -60) {
+                    this.hero.lc = PURPLE;
+                } else {
+                    this.hero.lc = RED;
+                }
             } else {
-                if (this.hero.dc > 120 || this.hero.dc < -120) {
+                // DRIFT
+                if (this.hero.dc > 140 || this.hero.dc < -140) {
                     this.hero.vy = MAX_SPEED_1 + 2*TURBO;
+                    this.hero.lc = RED;
                 } else if (this.hero.dc > 60 || this.hero.dc < -60) {
                     this.hero.vy = MAX_SPEED_1 + TURBO;
+                    this.hero.lc = RED;
                 }
 
                 this.hero.d = 0;
