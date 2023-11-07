@@ -117,12 +117,12 @@ function setup () {
 
     createCanvas(W, W, WEBGL);
 
-    initStage0();
+    initIntro();
     initStage1();
     initStage2();
 
     stageI = 0;
-    stage = newStage0();
+    stage = newIntro();
 }
 
 /**
@@ -145,7 +145,7 @@ function draw () {
             stage.draw();
             break;
         case CRASH:
-            stage = newStage0();
+            stage = newIntro();
             stageI = 0;
             h = 7;
             m = 0;

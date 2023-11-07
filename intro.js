@@ -1,13 +1,13 @@
 let TEXTS;
 
-function initStage0 () {
+function initIntro () {
     TEXTS = [
         "Ugh. I just had the craziest dream that I got into a car crash on the way to school.",
         "Oh shit, I overslept! I'm gonna be late!"
     ];
 }
 
-function newStage0 () {
+function newIntro () {
     return {
         ti: 0,
         tc: 0,
