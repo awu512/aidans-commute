@@ -132,7 +132,7 @@ function draw () {
     background(220);
 
     // update clock
-    if (frameCount % 180 == 0) {
+    if (stageI > 0 && stageI < 4 && frameCount % 180 == 0) {
         m++;
         if (m >= 60) {
             h++;
