@@ -478,7 +478,7 @@ function newStage2 () {
                 pb.translate(22, HUD_W-10);
                 pb.rotate(-PI/2);
                 pb.textSize(20);
-                pb.textFont('Courier New, monospace');
+                pb.textFont('monospace');
                 pb.text(`${h}:${m < 10 ? "0" : ""}${m}`, 0, 0);
             pb.pop();
 
