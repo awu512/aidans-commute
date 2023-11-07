@@ -161,6 +161,9 @@ function draw () {
                 case 2:
                     stage = newStage1();
                     break;
+                case 3:
+                    stage = newEnd();
+                    break;
             }
             stageI++;
     }
