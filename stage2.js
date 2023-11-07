@@ -30,19 +30,102 @@ function initStage2 () {
         draw() {
             push();
             
-            noStroke();
-            fill(RED);
-            
-            translate(this.x, this.y, CAR_SZ / 4);
-            rotate(this.a);
-            
-            box(CAR_SX, CAR_SY, CAR_SZ / 2);
-            
-            push();
-            translate(0,0,CAR_SZ/2);
-            box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
-            pop();
-            
+                noStroke();
+                
+                translate(this.x, this.y);
+                rotate(this.a);
+
+                // BODY
+                push();
+                    fill(WHITE);
+
+                    translate(0, 0, CAR_SZ / 4 + WHEEL_R);
+                
+                    box(CAR_SX, CAR_SY, CAR_SZ / 3);
+
+                    // LIGHTS
+                    push();
+                        fill(ORANGE);
+                        push();
+                            translate(
+                                CAR_SX/2 - WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                        push();
+                            translate(
+                                -CAR_SX/2 + WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                    pop();
+                    push();
+                        fill(RED);
+                        push();
+                            translate(
+                                CAR_SX/2 - 3.5*WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(4*WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                        push();
+                            translate(
+                                -CAR_SX/2 + 3.5*WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(4*WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                    pop();
+                    
+                    push();
+                        translate(0,CAR_SY/8,CAR_SZ/3);
+                        box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
+
+                        // WINDOW
+                        push();
+                            fill(GREY_BLUE);
+                            translate(0, CAR_SY/4 + WINDOW_D/2, 1.5*WINDOW_D);
+                            box(CAR_SX - WINDOW_D, WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                        pop();
+                    pop();
+                pop();
+
+                // TIRES
+                push();
+                    fill(BLACK);
+
+                    push();
+                        translate(CAR_SX/2, CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(-CAR_SX/2, CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(CAR_SX/2, -CAR_SY/3, WHEEL_R);
+                        rotate(this.a);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(-CAR_SX/2, -CAR_SY/3, WHEEL_R);
+                        rotate(this.a);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+                pop();
             pop();
         }
     });
@@ -77,7 +160,7 @@ function initStage2 () {
         y: ypos,
         drawRoad() {
             push();
-            fill(BLACK);
+            fill(DARK_GREY);
             noStroke();
             translate(0, this.y, 0);
             plane(ROAD_SX_2, ROAD_SY_2);
@@ -138,7 +221,7 @@ function newStage2 () {
         nextRoad: newRoad2(-1600),
         roadCkpt: -1200,
         enemyCkpt: -1200,
-        enemyFreq: 1600,
+        enemyFreq: 1000,
         maxEnemies: 20,
 
         updateHero() {
@@ -216,14 +299,15 @@ function newStage2 () {
                 for (let l = 0; l < 5; l++) {
                     if (this.enemies.length < this.maxEnemies) {
                         const ypos = this.enemyCkpt - 1200 - random(4*CAR_SY, this.enemyFreq - 4*CAR_SY);
-                        this.enemies.push(newEnemy2(l, ypos, 10-l));
+                        this.enemies.push(newEnemy2(l, ypos, 8-0.5*l));
                     }
                 }
 
                 this.enemyCkpt -= this.enemyFreq;
             }
 
-            this.enemies = this.enemies.filter(e => e.y < this.hero.y + 200);
+            this.enemies = this.enemies.filter(e => 
+                e.y < this.hero.y + 200 && e.y > this.hero.y - 1800);
             this.enemies.forEach(e => e.update());
         },
 

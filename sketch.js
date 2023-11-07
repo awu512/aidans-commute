@@ -7,7 +7,10 @@ let SPACE_BAR;
 // colors
 let RED;
 let GREY;
+let DARK_GREY;
+let GREY_BLUE;
 let YELLOW;
+let ORANGE;
 let WHITE;
 let BLACK;
 
@@ -15,6 +18,9 @@ let BLACK;
 let CAR_SX;
 let CAR_SY;
 let CAR_SZ;
+let WHEEL_R;
+let WHEEL_H;
+let WINDOW_D;
 
 // dash sizes
 let DASH_SX;
@@ -32,7 +38,10 @@ function init () {
     // colors
     RED = color(255,0,0);
     GREY = color(200); 
+    DARK_GREY = color(30);
+    GREY_BLUE = color(115, 147, 179);
     YELLOW = color(255,255,0);
+    ORANGE = color(255, 165, 0)
     WHITE = color(255);
     BLACK = color(0);
 
@@ -40,6 +49,9 @@ function init () {
     CAR_SX = 40;
     CAR_SY = 80;
     CAR_SZ = 40;
+    WHEEL_R = 10;
+    WHEEL_H = 5;
+    WINDOW_D = 2;
 
     // dash sizes
     DASH_SX = 5;

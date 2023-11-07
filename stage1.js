@@ -50,19 +50,100 @@ function initStage1 () {
         draw() {
             push();
             
-            noStroke();
-            fill(RED);
-            
-            translate(this.x, this.y, this.z + CAR_SZ / 4);
-            rotate(this.a);
-            
-            box(CAR_SX, CAR_SY, CAR_SZ / 2);
-            
-            push();
-            translate(0,0,CAR_SZ/2);
-            box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
-            pop();
-            
+                noStroke();
+                
+                translate(this.x, this.y, this.z);
+                rotate(this.a);
+
+                // BODY
+                push();
+                    fill(WHITE);
+
+                    translate(0, 0, CAR_SZ / 4 + WHEEL_R);
+                
+                    box(CAR_SX, CAR_SY, CAR_SZ / 3);
+
+                    // LIGHTS
+                    push();
+                        fill(ORANGE);
+                        push();
+                            translate(
+                                CAR_SX/2 - WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                        push();
+                            translate(
+                                -CAR_SX/2 + WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                    pop();
+                    push();
+                        fill(RED);
+                        push();
+                            translate(
+                                CAR_SX/2 - 3.5*WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(4*WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                        push();
+                            translate(
+                                -CAR_SX/2 + 3.5*WINDOW_D, 
+                                CAR_SY/2 + WINDOW_D/2, 
+                                1.5*WINDOW_D
+                            );
+                            box(4*WINDOW_D, WINDOW_D, 2*WINDOW_D);
+                        pop();
+                    pop();
+                    
+                    push();
+                        translate(0,CAR_SY/8,CAR_SZ/3);
+                        box(CAR_SX, CAR_SY / 2, CAR_SZ / 2);
+
+                        // WINDOW
+                        push();
+                            fill(GREY_BLUE);
+                            translate(0, CAR_SY/4 + WINDOW_D/2, 1.5*WINDOW_D);
+                            box(CAR_SX - WINDOW_D, WINDOW_D, CAR_SZ/2 - 4*WINDOW_D);
+                        pop();
+                    pop();
+                pop();
+
+                // TIRES
+                push();
+                    fill(BLACK);
+
+                    push();
+                        translate(CAR_SX/2, CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(-CAR_SX/2, CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(CAR_SX/2, -CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+
+                    push();
+                        translate(-CAR_SX/2, -CAR_SY/3, WHEEL_R);
+                        rotateZ(PI/2);
+                        cylinder(WHEEL_R, WHEEL_H);
+                    pop();
+                pop();
             pop();
         }
     });
@@ -88,7 +169,7 @@ function initStage1 () {
 
         draw() {
             push();
-                fill(BLACK);
+                fill(DARK_GREY);
                 noStroke();
                 translate(this.x, this.y, 0);
                 rotateZ(this.d);
@@ -152,7 +233,7 @@ function initStage1 () {
 
         draw() {
             push();
-                fill(BLACK);
+                fill(DARK_GREY);
                 noStroke();
                 translate(this.x, this.y, 0);
                 plane(RW);
