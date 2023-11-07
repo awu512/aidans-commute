@@ -1,5 +1,5 @@
-let stage1;
-let stage2;
+let stage;
+let stageI;
 
 // stage changes
 let CONT = 0;
@@ -117,11 +117,12 @@ function setup () {
 
     createCanvas(W, W, WEBGL);
 
+    initStage0();
     initStage1();
-    stage1 = newStage1();
-
     initStage2();
-    stage2 = newStage2();
+
+    stageI = 0;
+    stage = newStage0();
 }
 
 /**
@@ -139,10 +140,26 @@ function draw () {
         }
     }
 
-    // stage1.update();
-    // stage1.draw();
+    switch (stage.update()) {
+        case CONT:
+            stage.draw();
+            break;
+        case CRASH:
+            stage = newStage0();
+            break;
+        case FINISH:
+            switch (stageI) {
+                case 0: 
+                    stage = newStage1();
+                    break;
+                case 1:
+                    stage = newStage2();
+                    break;
+                case 2:
+                    stage = newStage1();
+                    break;
+            }
 
-    stage2.update();
-    stage2.draw();
+    }
 }
 
