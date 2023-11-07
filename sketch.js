@@ -1,6 +1,14 @@
 let stage1;
 let stage2;
 
+// stage changes
+let CONT = 0;
+let CRASH = 1;
+let FINISH = 2;
+
+// screen size
+let W;
+
 // space bar
 let SPACE_BAR;
 
@@ -13,6 +21,8 @@ let YELLOW;
 let ORANGE;
 let WHITE;
 let BLACK;
+let PURPLE;
+let BLUE;
 
 // car sizes
 let CAR_SX;
@@ -28,22 +38,43 @@ let DASH_SY;
 let DASH_SZ;
 let DASH_GAP;
 
+// camera
+let CAM_D;
+let CAM_H;
+let CAM_A;
+
+// hud
+let HUD_D;
+let HUD_W;
+
+// progress bar
+let pb;
+
+// times
+let h;
+let m;
+
 /**
  * Initialize global constants.
  */
 function init () {
+    // screen size
+    W = 800;
+
     // space bar
     SPACE_BAR = 32;
 
     // colors
     RED = color(255,0,0);
-    GREY = color(200); 
+    GREY = color(100); 
     DARK_GREY = color(30);
     GREY_BLUE = color(115, 147, 179);
     YELLOW = color(255,255,0);
     ORANGE = color(255, 165, 0)
     WHITE = color(255);
     BLACK = color(0);
+    PURPLE = color(255, 51, 221);
+    BLUE = color(41, 234, 255);
 
     // car sizes
     CAR_SX = 40;
@@ -58,23 +89,39 @@ function init () {
     DASH_SY = 30;
     DASH_SZ = 2;
     DASH_GAP = 150;
+
+    // camera
+    CAM_D = 195;
+    CAM_H = 150;
+    CAM_A = atan(150/195);
+
+    // hud
+    HUD_D = Math.sqrt(CAM_D*CAM_D + CAM_H*CAM_H) / 2;
+    HUD_W = 0.6*W;
+
+    // progress bar
+    pb = createGraphics(30, HUD_W);
+
+    // times
+    h = 7;
+    m = 0;
 }
 
 /**
  * p5.js setup() call.
  */
 function setup () {
-    createCanvas(800, 800, WEBGL);
-    
     rectMode(CENTER);
 
     init();
 
+    createCanvas(W, W, WEBGL);
+
     initStage1();
     stage1 = newStage1();
 
-    // initStage2();
-    // stage2 = newStage2();
+    initStage2();
+    stage2 = newStage2();
 }
 
 /**
@@ -83,10 +130,19 @@ function setup () {
 function draw () {
     background(220);
 
-    stage1.update();
-    stage1.draw();
+    // update clock
+    if (frameCount % 120 == 0) {
+        m++;
+        if (m >= 60) {
+            h++;
+            m = 0;
+        }
+    }
 
-    // stage2.update();
-    // stage2.draw();
+    // stage1.update();
+    // stage1.draw();
+
+    stage2.update();
+    stage2.draw();
 }
 
