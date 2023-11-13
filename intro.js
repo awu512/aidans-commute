@@ -1,10 +1,14 @@
 let TEXTS;
+let introBuf;
 
 function initIntro () {
     TEXTS = [
         "Ugh. I just had the craziest dream that I got into a car crash on the way to school.",
         "Oh shit, I overslept! I'm gonna be late!"
     ];
+
+
+    introBuf = createGraphics(W,W);
 }
 
 function newIntro () {
@@ -28,19 +32,17 @@ function newIntro () {
             return CONT;
         },
         draw() {
-            const buf = createGraphics(W,W);
+            introBuf.background(BLACK);
+            introBuf.noStroke();
 
-            buf.background(BLACK);
-            buf.noStroke();
+            introBuf.push();
+                introBuf.fill(WHITE);
+                introBuf.textSize(20);
+                introBuf.textFont('monospace');
+                introBuf.text(TEXTS[this.ti].substring(0, this.tc), 20, W/2-20, W-40);
+            introBuf.pop();
 
-            buf.push();
-                buf.fill(WHITE);
-                buf.textSize(20);
-                buf.textFont('monospace');
-                buf.text(TEXTS[this.ti].substring(0, this.tc), 20, W/2-20, W-40);
-            buf.pop();
-
-            image(buf, -W/2, -W/2);
+            image(introBuf, -W/2, -W/2);
         }
     }
 }

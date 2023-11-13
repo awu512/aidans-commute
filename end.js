@@ -1,3 +1,9 @@
+let endBuf;
+
+function initEnd () {
+    endBuf = createGraphics(W,W);
+}
+
 function newEnd () {
     return {
         tc: 0,
@@ -14,19 +20,17 @@ function newEnd () {
             return CONT;
         },
         draw() {
-            const buf = createGraphics(W,W);
+            endBuf.background(BLACK);
+            endBuf.noStroke();
 
-            buf.background(BLACK);
-            buf.noStroke();
+            endBuf.push();
+                endBuf.fill(WHITE);
+                endBuf.textSize(20);
+                endBuf.textFont('monospace');
+                endBuf.text(this.text.substring(0, this.tc), 20, W/2-20, W-40);
+            endBuf.pop();
 
-            buf.push();
-                buf.fill(WHITE);
-                buf.textSize(20);
-                buf.textFont('monospace');
-                buf.text(this.text.substring(0, this.tc), 20, W/2-20, W-40);
-            buf.pop();
-
-            image(buf, -W/2, -W/2);
+            image(endBuf, -W/2, -W/2);
         }
     }
 }
