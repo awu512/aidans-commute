@@ -117,10 +117,8 @@ function setup () {
 
     createCanvas(W, W, WEBGL);
 
-    initIntro();
     initStage1();
     initStage2();
-    initEnd();
 
     stageI = 0;
     stage = newIntro();
