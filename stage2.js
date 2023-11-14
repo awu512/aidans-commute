@@ -473,7 +473,7 @@ function newStage2 () {
             this.updateHero();
             this.updateCamera();
 
-            if (this.updateEnemies()) return CONT; // CRASH;
+            if (this.updateEnemies()) return CRASH;
             else if (this.hero.y <= -GOAL2) return FINISH;
             else return CONT;
         },

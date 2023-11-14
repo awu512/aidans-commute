@@ -124,7 +124,7 @@ function setup () {
     initStage2();
 
     stageI = 0;
-    stage = newStage1();
+    stage = newIntro();
 }
 
 /**
