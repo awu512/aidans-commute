@@ -2,6 +2,9 @@ let LANE_SX_2;
 let ROAD_SX_2;
 let ROAD_SY_2;
 
+let WALL_W;
+let WALL_H;
+
 let ACC_2;
 let MAX_SPEED_2;
 
@@ -19,6 +22,10 @@ function initStage2 () {
     LANE_SX_2 = CAR_SX * 2;
     ROAD_SX_2 = LANE_SX_2 * 6;
     ROAD_SY_2 = 1200;
+
+    // walls
+    WALL_W = 10;
+    WALL_H = 150;
 
     // acceleration
     ACC_2 = 0.2;
@@ -327,10 +334,25 @@ function initStage2 () {
             }
             pop();
         },
+        drawWalls() {
+            push();
+                fill(TAN);
+                stroke(DARK_GREY);
+                push();
+                    translate(ROAD_SX_2/2 + WALL_W/2, this.y, WALL_H/2);
+                    box(WALL_W, ROAD_SY_2, WALL_H);
+                pop();
+                push();
+                    translate(-ROAD_SX_2/2 - WALL_W/2, this.y, WALL_H/2);
+                    box(WALL_W, ROAD_SY_2, WALL_H);
+                pop();
+            pop();
+        },
         draw() {
             this.drawRoad();
             this.drawLines();
             this.drawDashes();
+            this.drawWalls();
         }
     })
 }
@@ -451,7 +473,7 @@ function newStage2 () {
             this.updateHero();
             this.updateCamera();
 
-            if (this.updateEnemies()) return CRASH;
+            if (this.updateEnemies()) return CONT; // CRASH;
             else if (this.hero.y <= -GOAL2) return FINISH;
             else return CONT;
         },
@@ -463,30 +485,32 @@ function newStage2 () {
 
             pb.noStroke();
 
+            pb.pixelDensity(8);
+            pb.rectMode(CENTER);
+            pb.translate(HUD_W/2, HUD_H/4);
+
             pb.push();
                 pb.fill(GREY);
-                pb.rect(10, 10, 10, 300);
+                pb.rect(0, HUD_H/2, HUD_W, 2);
             pb.pop();
 
             pb.push();
                 pb.fill(RED);
-                pb.rect(10, 310-300*progress, 10, 300*progress);
+                pb.rect(0.5*HUD_W*progress-HUD_W/2, HUD_H/2, HUD_W*progress, 2);
             pb.pop();
 
             pb.push();
                 pb.fill(RED);
-                pb.translate(22, HUD_W-10);
-                pb.rotate(-PI/2);
-                pb.textSize(20);
+                pb.translate(0, HUD_H/3);
+                pb.textSize(5);
                 pb.textFont('monospace');
-                pb.text(`${h}:${m < 10 ? "0" : ""}${m}`, 0, 0);
+                pb.textAlign(CENTER);
+                pb.text(`${h}:${m < 10 ? "0" : ""}${m}`, 0, 0, HUD_W);
             pb.pop();
 
             push();
-                translate(this.hero.x, this.hero.y, 0);
-                rotateZ(PI/2);
-                translate(-300, -HUD_W/2, 0.5*CAM_H);
-                rotateY(PI/2-CAM_A);
+                translate(this.hero.x - HUD_W/2, this.hero.y+CAR_SY/3, 2.4*CAR_SZ);
+                rotateX(-PI/2);
                 image(pb, 0, 0);
             pop();
         },

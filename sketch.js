@@ -23,6 +23,8 @@ let WHITE;
 let BLACK;
 let PURPLE;
 let BLUE;
+let TAN;
+let DARK_TAN;
 
 // car sizes
 let CAR_SX;
@@ -44,8 +46,8 @@ let CAM_H;
 let CAM_A;
 
 // hud
-let HUD_D;
 let HUD_W;
+let HUD_H;
 
 // progress bar
 let pb;
@@ -75,6 +77,7 @@ function init () {
     BLACK = color(0);
     PURPLE = color(255, 51, 221);
     BLUE = color(41, 234, 255);
+    TAN = color(210, 180, 140);
 
     // car sizes
     CAR_SX = 40;
@@ -96,11 +99,11 @@ function init () {
     CAM_A = atan(150/195);
 
     // hud
-    HUD_D = Math.sqrt(CAM_D*CAM_D + CAM_H*CAM_H) / 2;
-    HUD_W = 0.6*W;
+    HUD_W = CAR_SX - 10;
+    HUD_H = CAR_SY / 2;
 
     // progress bar
-    pb = createGraphics(30, HUD_W);
+    pb = createGraphics(HUD_W, HUD_H);
 
     // times
     h = 7;
@@ -121,7 +124,7 @@ function setup () {
     initStage2();
 
     stageI = 0;
-    stage = newIntro();
+    stage = newStage1();
 }
 
 /**

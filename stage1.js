@@ -464,30 +464,38 @@ function newStage1 () {
 
             pb.noStroke();
 
+            pb.pixelDensity(8);
+            pb.rectMode(CENTER);
+            pb.translate(HUD_W/2, HUD_H/4);
+
             pb.push();
                 pb.fill(GREY);
-                pb.rect(10, 10, 10, 300);
+                pb.rect(0, HUD_H/2, HUD_W, 2);
             pb.pop();
 
             pb.push();
                 pb.fill(RED);
-                pb.rect(10, 310-300*progressPercent, 10, 300*progressPercent);
+                pb.rect(0.5*HUD_W*progressPercent-HUD_W/2, HUD_H/2, HUD_W*progressPercent, 2);
             pb.pop();
 
             pb.push();
                 pb.fill(RED);
-                pb.translate(22, HUD_W-10);
-                pb.rotate(-PI/2);
-                pb.textSize(20);
+                pb.translate(0, HUD_H/3);
+                pb.textSize(5);
                 pb.textFont('monospace');
-                pb.text(`${h}:${m < 10 ? "0" : ""}${m}`, 0, 0);
+                pb.textAlign(CENTER);
+                pb.text(`${h}:${m < 10 ? "0" : ""}${m}`, 0, 0, HUD_W);
             pb.pop();
 
             push();
-                translate(this.hero.x, this.hero.y, 0);
-                rotateZ(this.hero.a + PI/2);
-                translate(-300, -HUD_W/2, 0.5*CAM_H);
-                rotateY(PI/2-CAM_A);
+                translate(
+                    this.hero.x, 
+                    this.hero.y, 
+                    this.hero.z + 2.4*CAR_SZ
+                );
+                rotateX(-PI/2);
+                rotateY(-this.hero.a);
+                translate(-HUD_W/2, 0, CAR_SY/3);
                 image(pb, 0, 0);
             pop();
         },
