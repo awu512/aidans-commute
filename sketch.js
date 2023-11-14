@@ -123,8 +123,11 @@ function setup () {
     initStage1();
     initStage2();
 
-    stageI = 0;
-    stage = newIntro();
+    // stageI = 0;
+    // stage = newIntro();
+
+    stageI = 1;
+    stage = newStage1();
 }
 
 /**

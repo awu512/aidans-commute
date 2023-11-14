@@ -5,6 +5,11 @@ let RL;
 let DASH_LEN_1;
 let STOP_LINE_1;
 
+let BUILD_SIZE;
+let BUILD_COLS;
+let BUILD_WNDW_GAP;
+let BUILD_WNDW_SIZE;
+
 let ACC_1; // accelaration
 let GRAV_1; // gravity
 let TURBO; // boost speed
@@ -27,6 +32,17 @@ function initStage1 () {
     RL = 1500;
     DASH_LEN_1 = RL - 1.5*RW;;
     STOP_LINE_1 = 40;
+
+    BUILD_SIZE = (RL-CAR_SX)/5;
+    BUILD_COLS = [
+        color(240, 120, 80),
+        color(40, 255, 110),
+        color(200, 180, 20),
+        color(80, 80, 240),
+        color(240, 120, 80)
+    ];
+    BUILD_WNDW_GAP = 10;
+    BUILD_WNDW_SIZE = (BUILD_SIZE - 3 * BUILD_WNDW_GAP) / 2;
     
     // acceleration
     ACC_1 = 0.05;
@@ -220,7 +236,38 @@ function initStage1 () {
                         pop();
                     }
                 pop();
+
+                push();
+                    fill(TAN);
+                    noStroke();
+                    push();
+                        translate(RW/2 + CAR_SX/4, 0, 5);
+                        box(CAR_SX/2, RL, 10);
+                    pop();
+                    push();
+                        translate(-RW/2 - CAR_SX/4, 0, 5);
+                        box(CAR_SX/2, RL, 10);
+                    pop();
+                pop();
+
+                for (let s = -1; s <= 1; s+=2) { 
+                    for (let i = 0; i < 5; i++) {
+                        const p = -2*BUILD_SIZE + i * BUILD_SIZE;
+                        push();
+                            fill(s == -1 ? BUILD_COLS[i] : BUILD_COLS[4-i]);
+                            noStroke();
+                            translate(
+                                s * (RW/2 + BUILD_SIZE/2 + CAR_SX/2),
+                                p,
+                                BUILD_SIZE
+                            );
+                            box(BUILD_SIZE, BUILD_SIZE, 2*BUILD_SIZE);
+                        pop();
+                    }
+                }
             pop();
+
+            
         }
     });
 
@@ -239,10 +286,42 @@ function initStage1 () {
 
         draw() {
             push();
-                fill(DARK_GREY);
                 noStroke();
                 translate(this.x, this.y, 0);
-                plane(RW);
+
+                push();
+                    fill(DARK_GREY);
+                    plane(RW);
+                pop();
+
+                push();
+                    push();
+                        rotateZ(-this.b1);
+                        push();
+                            fill(color(120));
+                            translate(0, RW/2 + CAR_SX/2 + 5, BUILD_SIZE);
+                            box(RW + CAR_SX, 10, 2*BUILD_SIZE);
+                        pop();
+                        push();
+                            fill(TAN);
+                            translate(0, RW/2 + CAR_SX/4, 5);
+                            box(RW + CAR_SX, CAR_SX/2, 10);
+                        pop();
+                    pop();
+                    push();
+                        rotateZ(-this.b2);
+                        push();
+                            fill(color(80));
+                            translate(0, RW/2 + CAR_SX/2 + 5, BUILD_SIZE);
+                            box(RW + CAR_SX, 10, 2*BUILD_SIZE);
+                        pop();
+                        push();
+                            fill(TAN);
+                            translate(0, RW/2 + CAR_SX/4, 5);
+                            box(RW + CAR_SX, CAR_SX/2, 10);
+                        pop();
+                    pop();
+                pop();
             pop();
         }
     });
@@ -419,14 +498,33 @@ function newStage1 () {
                     this.currRoad = this.nextRoad;
                     this.prevConnect = this.nextConnect;
 
+                    const turn = PI/2 * (1 - Math.floor(Math.random() * 3))
+                    const nextDir = this.currRoad.d + turn;
+
+                    let b1;
+                    let b2;
+
+                    switch (turn) {
+                        case PI/2:
+                            b1 = this.currRoad.d;
+                            b2 = this.currRoad.d - PI/2;
+                            break;
+                        case 0:
+                            b1 = this.currRoad.d + PI/2;
+                            b2 = this.currRoad.d - PI/2;
+                            break;
+                        case -PI/2:
+                            b1 = this.currRoad.d + PI/2;
+                            b2 = this.currRoad.d;
+                            break;
+                    }
+
                     this.nextConnect = newConnect1(
                         this.currRoad.x + sin(this.currRoad.d) * (RL/2 + RW/2),
                         this.currRoad.y + cos(this.currRoad.d) * (RL/2 + RW/2),
-                        0, // TODO
-                        0
+                        b1,
+                        b2
                     );
-
-                    const nextDir =  this.currRoad.d + PI/2 * (1 - Math.floor(Math.random() * 3));
 
                     this.nextRoad = newRoad1(
                         this.nextConnect.x + sin(nextDir) * (RL/2 + RW/2),
